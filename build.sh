@@ -2,7 +2,7 @@
 
 set -xv
 
-kversion=4.14.102
+kversion=5.4.29_TXOS_20.04
 
 spec_name="SPECS/kernel-aarch64.spec"
 build_arch="aarch64"
@@ -70,7 +70,8 @@ fi
 
 if [ ! -e SOURCES/linux-$kversion.tar.xz ]; then
     pushd SOURCES
-    wget https://www.kernel.org/pub/linux/kernel/v4.x/linux-$kversion.tar.xz
+    git clone https://github.com/MarvellServer/ThunderX-TXOS.git -b next linux-$kversion
+    tar -cJf linux-$kversion.tar.xz linux-$kversion
     popd
 fi
 
