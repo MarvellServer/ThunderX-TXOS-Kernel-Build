@@ -7,6 +7,9 @@ Summary: The Linux kernel
 # For internal testing builds during development, it should be 0.
 %global released_kernel 1
 
+%define kernel_name kernel
+%define centupdate_ext txos
+
 %global distro_build 80.1.1
 
 # Sign the x86_64 kernel for secure boot authentication
@@ -32,13 +35,18 @@ Summary: The Linux kernel
 
 # define buildid .local
 
+%if 0%{?kern_version:1}
+%define rpmversion %{kern_version}
+%define pkgrelease 80.11.2.el8_0
+%define centupdate 80.11.2.el8_0
+%else
 %define rpmversion 4.18.0
 %define pkgrelease 80.11.2.el8_0
+%endif
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 80.11.2%{?dist}
-
-%define pkg_release %{specrelease}%{?buildid}
+%define specrelease %%SPECRELEASE%%
+%define pkg_release %{centupdate}%{?buildid}
 
 # What parts do we want to build?  We must build at least one kernel.
 # These are the kernels that are built IF the architecture allows it.
@@ -353,7 +361,7 @@ BuildRequires: xmlto
 BuildRequires: asciidoc
 %endif
 
-Source0: linux-%{rpmversion}-%{pkgrelease}.tar.xz
+Source0: linux-%{rpmversion}.tar.xz
 
 Source11: x509.genkey
 %if %{?released_kernel}
@@ -369,22 +377,12 @@ Source16: mod-extra.list
 Source17: mod-extra.sh
 Source18: mod-sign.sh
 Source19: mod-extra-blacklist.sh
-Source90: filter-x86_64.sh
 Source93: filter-aarch64.sh
-Source96: filter-ppc64le.sh
-Source97: filter-s390x.sh
 Source99: filter-modules.sh
 %define modsign_cmd %{SOURCE18}
 
 Source20: kernel-aarch64.config
 Source21: kernel-aarch64-debug.config
-Source32: kernel-ppc64le.config
-Source33: kernel-ppc64le-debug.config
-Source36: kernel-s390x.config
-Source37: kernel-s390x-debug.config
-Source38: kernel-s390x-zfcpdump.config
-Source39: kernel-x86_64.config
-Source40: kernel-x86_64-debug.config
 Source41: generate_all_configs.sh
 
 Source42: process_configs.sh
@@ -393,14 +391,8 @@ Source43: generate_bls_conf.sh
 Source200: check-kabi
 
 Source201: Module.kabi_aarch64
-Source202: Module.kabi_ppc64le
-Source203: Module.kabi_s390x
-Source204: Module.kabi_x86_64
 
 Source210: Module.kabi_dup_aarch64
-Source211: Module.kabi_dup_ppc64le
-Source212: Module.kabi_dup_s390x
-Source213: Module.kabi_dup_x86_64
 
 Source300: kernel-abi-whitelists-%{rpmversion}-%{distro_build}.tar.bz2
 Source301: kernel-kabi-dw-%{rpmversion}-%{distro_build}.tar.bz2
@@ -411,12 +403,6 @@ Source2001: cpupower.config
 
 # Sources for CentOS debranding
 Source9000: centos.pem
-
-## Patches needed for building this package
-
-Patch1000: debrand-single-cpu.patch
-Patch1001: debrand-rh_taint.patch
-Patch1002: debrand-rh-i686-cpu.patch
 
 # empty final patch to facilitate testing of kernel patches
 Patch999999: linux-kernel-test.patch
@@ -871,15 +857,12 @@ ApplyOptionalPatch()
 
 %setup -q -n kernel-%{rpmversion}-%{pkgrelease} -c
 
-cp -v %{SOURCE9000} linux-%{rpmversion}-%{pkgrelease}/certs/rhel.pem
-mv linux-%{rpmversion}-%{pkgrelease} linux-%{KVERREL}
+cp -v %{SOURCE9000} linux-%{rpmversion}/certs/rhel.pem
+mv linux-%{rpmversion} linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 
 ApplyOptionalPatch linux-kernel-test.patch
-ApplyOptionalPatch debrand-single-cpu.patch
-ApplyOptionalPatch debrand-rh_taint.patch
-ApplyOptionalPatch debrand-rh-i686-cpu.patch
 
 # END OF PATCH APPLICATIONS
 
