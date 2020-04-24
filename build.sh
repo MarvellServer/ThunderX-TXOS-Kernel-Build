@@ -4,7 +4,7 @@ set -xv
 
 kversion=5.4.29_TXOS_20.04
 
-spec_name="SPECS/kernel-aarch64.spec"
+spec_name="SPECS/kernel.spec"
 build_arch="aarch64"
 
 build_opts=(--define "%_topdir $PWD")
