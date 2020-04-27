@@ -45,8 +45,13 @@ Summary: The Linux kernel
 %endif
 
 # allow pkg_release to have configurable %%{?dist} tag
+%if 0
 %define specrelease %%SPECRELEASE%%
 %define pkg_release %{centupdate}%{?buildid}
+%endif
+%define specrelease 80.11.2%{?dist}
+
+%define pkg_release %{specrelease}%{?buildid}
 
 # What parts do we want to build?  We must build at least one kernel.
 # These are the kernels that are built IF the architecture allows it.
@@ -361,7 +366,7 @@ BuildRequires: xmlto
 BuildRequires: asciidoc
 %endif
 
-Source0: linux-%{rpmversion}.tar.xz
+Source0: linux-%{kern_version}.tar.xz
 
 Source11: x509.genkey
 %if %{?released_kernel}
@@ -857,8 +862,8 @@ ApplyOptionalPatch()
 
 %setup -q -n kernel-%{rpmversion}-%{pkgrelease} -c
 
-cp -v %{SOURCE9000} linux-%{rpmversion}/certs/rhel.pem
-mv linux-%{rpmversion} linux-%{KVERREL}
+cp -v %{SOURCE9000} linux-%{kern_version}/certs/rhel.pem
+mv linux-%{kern_version} linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 
@@ -885,6 +890,7 @@ pathfix.py -i %{__python3} -p -n \
 	scripts/show_delta \
 	scripts/diffconfig \
 	scripts/bloat-o-meter \
+	scripts/gen_compile_commands.py \
 	tools/perf/tests/attr.py \
 	tools/perf/scripts/python/stat-cpi.py \
 	tools/perf/scripts/python/sched-migration.py \
@@ -996,7 +1002,7 @@ BuildKernel() {
     Arch=`head -1 .config | cut -b 3-`
     echo USING ARCH=$Arch
 
-    %{make} -s ARCH=$Arch oldnoconfig >/dev/null
+    %{make} -s ARCH=$Arch olddefconfig >/dev/null
     %{make} -s ARCH=$Arch V=1 %{?_smp_mflags} KCFLAGS="%{?kcflags}" WITH_GCOV="%{?with_gcov}" $MakeTarget %{?sparse_mflags} %{?kernel_mflags}
     if [ $DoModules -eq 1 ]; then
 	%{make} -s ARCH=$Arch V=1 %{?_smp_mflags} KCFLAGS="%{?kcflags}" WITH_GCOV="%{?with_gcov}" modules %{?sparse_mflags} || exit 1
@@ -1648,7 +1654,7 @@ rm -rf %{buildroot}%{_docdir}/perf-tip
 # Whoever wants examples can fix it up!
 
 # remove examples
-rm -rf %{buildroot}/usr/lib/examples/perf
+rm -rf %{buildroot}/usr/lib/examples/perf %{buildroot}/usr/lib/perf/examples
 # remove the stray header file that somehow got packaged in examples
 rm -rf %{buildroot}/usr/lib/include/perf/bpf/bpf.h
 
