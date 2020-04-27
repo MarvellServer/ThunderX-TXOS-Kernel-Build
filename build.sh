@@ -99,6 +99,7 @@ if [ x"$do_build" == x"yes" ]; then
 		-ba ${spec_name} \
 		--without kabichk \
 		--without kernel_abi_whitelists \
+		--without cross_headers \
 		2>&1 | tee build-out.log
 else
     echo build target: $build_target
