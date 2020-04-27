@@ -97,6 +97,8 @@ fi
 if [ x"$do_build" == x"yes" ]; then
     rpmbuild "${build_opts[@]}" \
 		-ba ${spec_name} \
+		--without kabichk \
+		--without kernel_abi_whitelists \
 		2>&1 | tee build-out.log
 else
     echo build target: $build_target

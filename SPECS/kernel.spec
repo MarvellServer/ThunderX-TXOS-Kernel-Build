@@ -399,8 +399,10 @@ Source201: Module.kabi_aarch64
 
 Source210: Module.kabi_dup_aarch64
 
+%if 0
 Source300: kernel-abi-whitelists-%{rpmversion}-%{distro_build}.tar.bz2
 Source301: kernel-kabi-dw-%{rpmversion}-%{distro_build}.tar.bz2
+%endif
 
 # Sources for kernel-tools
 Source2000: cpupower.service
