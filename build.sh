@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# stop on errors:
+set -e
+
 set -xv
 
 kversion=5.4.29_TXOS_20.04
