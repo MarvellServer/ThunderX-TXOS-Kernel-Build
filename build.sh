@@ -40,7 +40,8 @@ if [ x"$ilp32" == x"yes" ]; then
     no_perf="yes"
     sed -i -e 's/# CONFIG_ARM64_ILP32 is not set/CONFIG_ARM64_ILP32=y/g' SOURCES/config-arm64
 else
-    sed -i -e 's/CONFIG_ARM64_ILP32=y/# CONFIG_ARM64_ILP32 is not set/g' SOURCES/config-arm64
+    #sed -i -e 's/CONFIG_ARM64_ILP32=y/# CONFIG_ARM64_ILP32 is not set/g' SOURCES/config-arm64
+    :
 fi
 
 cross_compile=${build_arch}-linux
