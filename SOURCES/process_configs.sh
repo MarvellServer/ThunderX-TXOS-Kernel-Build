@@ -26,9 +26,9 @@ die()
 switch_to_toplevel()
 {
 	path="$(pwd)"
-	while test -n "$path"
+	while test "$path" != "/"
 	do
-		test -d $path/firmware && \
+		test -d $path/kernel && \
 			test -e $path/MAINTAINERS && \
 			test -d $path/drivers && \
 			break
@@ -36,7 +36,7 @@ switch_to_toplevel()
 		path="$(dirname $path)"
 	done
 
-	test -n "$path"  || die "Can't find toplevel"
+	test "$path" != "/"  || die "Can't find toplevel"
 	echo "$path"
 }
 
@@ -111,7 +111,7 @@ function process_configs()
 
 		rm .listnewconfig
 
-		make ARCH=$arch KCONFIG_CONFIG=$cfgorig oldnoconfig > /dev/null || exit 1
+		make ARCH=$arch KCONFIG_CONFIG=$cfgorig olddefconfig > /dev/null || exit 1
 		echo "# $arch" > ${cfgtmp}
 		cat "${cfgorig}" >> ${cfgtmp}
 		if test -n "$CHECKOPTIONS"
