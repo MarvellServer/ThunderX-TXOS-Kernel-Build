@@ -4,6 +4,8 @@
 # and listnewconfig
 #
 
+set -e
+
 usage()
 {
 	echo "process_configs.sh [ -n|-c|-t ] package_name kernel_version"
@@ -97,7 +99,7 @@ function process_configs()
 		fi
 		rm .newoptions
 
-		grep -E 'config.*warning' .listnewconfig > .warnings
+		grep -E 'config.*warning' .listnewconfig || true > .warnings
 		if test -n "$CHECKWARNINGS" && test -s .warnings
 		then
 			echo "Found misconfigured config items, please set them to an appropriate value"
