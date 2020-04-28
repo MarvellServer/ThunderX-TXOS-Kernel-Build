@@ -1656,9 +1656,16 @@ rm -rf %{buildroot}%{_docdir}/perf-tip
 # Whoever wants examples can fix it up!
 
 # remove examples
-rm -rf %{buildroot}/usr/lib/examples/perf %{buildroot}/usr/lib/perf/examples
+rm -rf %{buildroot}/usr/lib/examples/perf
+rm -rf %{buildroot}/usr/lib/perf/examples/bpf
+rm -rf %{buildroot}/usr/lib/perf/examples
 # remove the stray header file that somehow got packaged in examples
 rm -rf %{buildroot}/usr/lib/include/perf/bpf/bpf.h
+rm -rf %{buildroot}/usr/lib/perf/include/bpf/bpf.h
+rm -rf %{buildroot}/usr/lib/perf/include/bpf/linux/socket.h
+rm -rf %{buildroot}/usr/lib/perf/include/bpf/pid_filter.h
+rm -rf %{buildroot}/usr/lib/perf/include/bpf/stdio.h
+rm -rf %{buildroot}/usr/lib/perf/include/bpf/unistd.h
 
 # python-perf extension
 %{perf_make} DESTDIR=$RPM_BUILD_ROOT install-python_ext
@@ -1685,6 +1692,10 @@ mkdir -p %{buildroot}%{_unitdir} %{buildroot}%{_sysconfdir}/sysconfig
 install -m644 %{SOURCE2000} %{buildroot}%{_unitdir}/cpupower.service
 install -m644 %{SOURCE2001} %{buildroot}%{_sysconfdir}/sysconfig/cpupower
 %endif
+
+# Remove cpupower because we are not using the file it is a untracked file.
+rm -rf %{buildroot}/usr/share/bash-completion/completions/cpupower
+
 %ifarch x86_64
    mkdir -p %{buildroot}%{_mandir}/man8
    pushd tools/power/x86/x86_energy_perf_policy
@@ -1987,6 +1998,10 @@ fi
 %{_mandir}/man8/bpftool-prog.8.gz
 %{_mandir}/man8/bpftool-perf.8.gz
 %{_mandir}/man8/bpftool.8.gz
+%{_mandir}/man7/bpf-helpers.7.gz
+%{_mandir}/man8/bpftool-btf.8.gz
+%{_mandir}/man8/bpftool-feature.8.gz
+%{_mandir}/man8/bpftool-net.8.gz
 
 %if %{with_debuginfo}
 %files -f bpftool-debuginfo.list -n bpftool-debuginfo
