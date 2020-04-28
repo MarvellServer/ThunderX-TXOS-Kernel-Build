@@ -36,9 +36,9 @@ Summary: The Linux kernel
 # define buildid .local
 
 %if 0%{?kern_version:1}
-%define rpmversion %{kern_version}
-%define pkgrelease 80.11.2.el8_0
-%define centupdate 80.11.2.el8_0
+%define rpmversion 5.4.29
+%define dist .el8
+%define pkgrelease 1.txos20.04
 %else
 %define rpmversion 4.18.0
 %define pkgrelease 80.11.2.el8_0
@@ -49,7 +49,7 @@ Summary: The Linux kernel
 %define specrelease %%SPECRELEASE%%
 %define pkg_release %{centupdate}%{?buildid}
 %endif
-%define specrelease 80.11.2%{?dist}
+%define specrelease %{pkgrelease}%{?dist}
 
 %define pkg_release %{specrelease}%{?buildid}
 
