@@ -80,7 +80,7 @@ if [ ! -e SOURCES/linux-$kversion.tar.xz ]; then
 	https://github.com/MarvellServer/ThunderX-TXOS.git -b next linux-$kversion
     cd  linux-$kversion
     git config tar.tar.xz.command "xz -c"
-    git archive origin/next --prefix=linux-5.4.29_TXOS_20.04 \
+    git archive origin/next --prefix=linux-5.4.29_TXOS_20.04/ \
 	-o $topdir/SOURCES/linux-5.4.29_TXOS_20.04.tar.xz
 )
 fi
