@@ -36,9 +36,15 @@ Summary: The Linux kernel
 # define buildid .local
 
 %if 0%{?kern_version:1}
-%define rpmversion 5.4.29
+
+%define __txos_base       %{?txos_base}%{!?txos_base:5.4.29}
+%define __txos_patchlevel %{?txos_patchlevel}%{!?txos_patchlevel:1}
+%define __txos_release    %{?txos_release}%{!?txos_release:txos20.04}
+
+%define rpmversion %{__txos_base}
+%define pkgrelease %{__txos_patchlevel}.%{__txos_release}
 %define dist .el8
-%define pkgrelease 1.txos20.04
+
 %else
 %define rpmversion 4.18.0
 %define pkgrelease 80.11.2.el8_0

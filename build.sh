@@ -77,12 +77,53 @@ if [ ! -e SOURCES/linux-$kversion.tar.xz ]; then
     topdir=$(pwd)
     cd SOURCES
     git clone --reference-if-able ${txosgit:-$(cd $topdir/../ThunderX-TXOS; pwd)} \
-	https://github.com/MarvellServer/ThunderX-TXOS.git -b next linux-$kversion
+	https://github.com/MarvellServer/ThunderX-TXOS.git -n linux-$kversion
     cd  linux-$kversion
+    git checkout ${cid:-origin/next}
     git config tar.tar.xz.command "xz -c"
-    git archive origin/next --prefix=linux-$kversion/ \
+    git archive HEAD --prefix=linux-$kversion/ \
 	-o $topdir/SOURCES/linux-$kversion.tar.xz
 )
+fi
+
+if [ -d SOURCES/linux-$kversion ]; then
+    txos_cid=$(xzcat SOURCES/linux-txos-5.4.29.tar.xz | git get-tar-commit-id)
+    [ -n "$txos_cid" ]
+
+    txos=$(
+	cd SOURCES/linux-$kversion
+	git describe --match txos-2\*.\* --abbrev=0 --always $txos_cid
+    )
+    txosfull=$(
+	cd SOURCES/linux-$kversion
+	git describe --match txos-2\*.\* --abbrev=12 --always $txos_cid
+    )
+    pkg=$(
+	cd SOURCES/linux-$kversion
+	git describe --match txos-\*-\* --abbrev=0 --always $txos_cid
+    )
+    pkgfull=$(
+	cd SOURCES/linux-$kversion
+	git describe --match txos-\*-\* --abbrev=12 --always $txos_cid
+    )
+
+    base=${pkg%-*}
+    base=${base#txos-}
+
+    build_opts+=(--define "txos_base $base")
+    build_opts+=(--define "txos_patchlevel ${pkg##*-}")
+
+    if [ -n "${txos_release:-}" ]; then
+	build_opts+=(--define "txos_release $txos_release")
+    elif [ "$txos" = "$txosfull" ]; then
+	build_opts+=(--define "txos_release txos${txos#txos-}")
+    else
+	build_opts+=(--define "txos_release txos${txos#txos-}+")
+    fi
+
+    if [ "$pkg" != "$pkgfull" ]; then
+	build_opts+=(--define "buildid .g${pkgfull##*-g}")
+    fi
 fi
 
 echo "PWD:${PWD}"
