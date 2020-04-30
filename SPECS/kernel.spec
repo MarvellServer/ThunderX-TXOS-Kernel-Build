@@ -392,8 +392,17 @@ Source93: filter-aarch64.sh
 Source99: filter-modules.sh
 %define modsign_cmd %{SOURCE18}
 
+%if 0
 Source20: kernel-aarch64.config
 Source21: kernel-aarch64-debug.config
+Source32: kernel-ppc64le.config
+Source33: kernel-ppc64le-debug.config
+Source36: kernel-s390x.config
+Source37: kernel-s390x-debug.config
+Source38: kernel-s390x-zfcpdump.config
+Source39: kernel-x86_64.config
+Source40: kernel-x86_64-debug.config
+%endif
 Source41: generate_all_configs.sh
 
 Source42: process_configs.sh
@@ -914,7 +923,7 @@ mkdir configs
 cd configs
 
 # Drop some necessary files from the source dir into the buildroot
-cp $RPM_SOURCE_DIR/kernel-*.config .
+cp ../marvell/configs/kernel-*.config .
 cp %{SOURCE41} .
 VERSION=%{version} ./generate_all_configs.sh
 
