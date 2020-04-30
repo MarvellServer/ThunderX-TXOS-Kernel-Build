@@ -28,19 +28,6 @@ if [ x"$do_build" == x"clean" ]; then
     exit 0;
 fi
 
-# select cavium compiler if ilp32 is requested
-if [ x"$ilp32" == x"yes" ]; then
-    build_arch="aarch64-thunderx"
-    build_opts+=(--define "ilp32_build 1")
-    no_deps="yes"
-    no_debug="yes"
-    no_perf="yes"
-    sed -i -e 's/# CONFIG_ARM64_ILP32 is not set/CONFIG_ARM64_ILP32=y/g' SOURCES/config-arm64
-else
-    #sed -i -e 's/CONFIG_ARM64_ILP32=y/# CONFIG_ARM64_ILP32 is not set/g' SOURCES/config-arm64
-    :
-fi
-
 cross_compile=${build_arch}-linux
 
 build_target=${build_arch}-linux
