@@ -12,6 +12,15 @@ build_opts=(--define "%_topdir $PWD")
 
 ${cross_compile:""}
 
+if [ -n "${do_release:=}" ]; then
+    if ! (echo "$do_release" | sed -e '/^txos2[0-9][.][0-9][0-9]$/Q0;Q1'); then
+	echo "Release string '$do_release' does not fit the version format: txos2\\d.\\d\\d"
+	exit 1
+    fi
+    do_build=yes
+    txos_release=$do_release
+fi
+
 if [ x"$do_build" == x"clean" ]; then
     pushd BUILD
     rm -rf ./*
@@ -55,6 +64,10 @@ if [ x"$no_debug" == x"yes" ]; then
     build_opts+=(--without=debug --without=debuginfo)
 fi
 
+if ( [ -e SOURCES/linux-txos.tar.xz ] && [ -n "$do_release" ] ) \
+    || [ -n "${cid:-}" ] ; then
+    rm SOURCES/linux-txos.tar.xz
+fi
 
 if [ ! -e SOURCES/linux-txos.tar.xz ]; then
 (
@@ -74,12 +87,15 @@ if [ ! -e SOURCES/linux-txos.tar.xz ]; then
 )
 fi
 
-if [ -n "${txos_base-}" && -n "${txos_patchlevel-}" && -n "${txos_release-}" ]; then
-    : # package information already defined
-elif [ -d SOURCES/linux-txos ]; then
+if [ -e SOURCES/linux-txos.tar.xz ]; then
     txos_cid=$(xzcat SOURCES/linux-txos.tar.xz | git get-tar-commit-id)
-    [ -n "$txos_cid" ]
+fi
 
+if [ -n "${txos_base:-}" ]		&& \
+   [ -n "${txos_patchlevel:-}" ]	&& \
+   [ -n "${txos_release:-}" ];		then
+    : # package information already defined
+elif [ -n "$txos_cid:-" ];then
     txos=$(
 	cd SOURCES/linux-txos
 	git describe --match txos-2\*.\* --abbrev=0 --always $txos_cid
@@ -111,7 +127,12 @@ elif [ -d SOURCES/linux-txos ]; then
 	txos_release="txos${txos#txos-}+"
     fi
 
-    if [ "$pkg" != "$pkgfull" ]; then
+    if [ "$pkg" = "$pkgfull" ]; then
+	: # nop
+    elif [ -n "$do_release" ]; then
+	echo 'A release requires a kernel version tag in the format: txos-<base>-<patchlevel>'
+	exit 1
+    else
 	buildid=".g${pkgfull##*-g}"
     fi
 else
@@ -125,7 +146,7 @@ cat<<EOF >SOURCES/txos.inc
 %define txos_release    ${txos_release:?}
 EOF
 
-if [ -n "${buildid-}" ]; then
+if [ -n "${buildid:-}" ]; then
     cat<<EOF >>SOURCES/txos.inc
 %define buildid         $buildid
 EOF
