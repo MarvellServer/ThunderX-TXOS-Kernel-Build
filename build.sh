@@ -87,7 +87,9 @@ if [ ! -e SOURCES/linux-txos.tar.xz ]; then
 )
 fi
 
-if [ -d SOURCES/linux-txos ]; then
+if [ -n "${txos_base-}" && -n "${txos_patchlevel-}" && -n "${txos_release-}" ]; then
+    : # package information already defined
+elif [ -d SOURCES/linux-txos ]; then
     txos_cid=$(xzcat SOURCES/linux-txos.tar.xz | git get-tar-commit-id)
     [ -n "$txos_cid" ]
 
@@ -111,21 +113,38 @@ if [ -d SOURCES/linux-txos ]; then
     base=${pkg%-*}
     base=${base#txos-}
 
-    build_opts+=(--define "txos_base $base")
-    build_opts+=(--define "txos_patchlevel ${pkg##*-}")
+    txos_base="$base"
+    txos_patchlevel="${pkg##*-}"
 
     if [ -n "${txos_release:-}" ]; then
-	build_opts+=(--define "txos_release $txos_release")
+	txos_release="$txos_release"
     elif [ "$txos" = "$txosfull" ]; then
-	build_opts+=(--define "txos_release txos${txos#txos-}")
+	txos_release="txos${txos#txos-}"
     else
-	build_opts+=(--define "txos_release txos${txos#txos-}+")
+	txos_release="txos${txos#txos-}+"
     fi
 
     if [ "$pkg" != "$pkgfull" ]; then
-	build_opts+=(--define "buildid .g${pkgfull##*-g}")
+	buildid=".g${pkgfull##*-g}"
     fi
+else
+    echo "No TXOS package information found"
+    exit 1
 fi
+
+cat<<EOF >SOURCES/txos.inc
+%define txos_base       ${txos_base:?}
+%define txos_patchlevel ${txos_patchlevel:?}
+%define txos_release    ${txos_release:?}
+EOF
+
+if [ -n "${buildid-}" ]; then
+    cat<<EOF >>SOURCES/txos.inc
+%define buildid         $buildid
+EOF
+fi
+
+cat SOURCES/txos.inc
 
 echo "PWD:${PWD}"
 echo build_opts:${build_opts[@]}

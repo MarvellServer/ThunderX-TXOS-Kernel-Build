@@ -7,9 +7,6 @@ Summary: The Linux kernel
 # For internal testing builds during development, it should be 0.
 %global released_kernel 1
 
-%define kernel_name kernel
-%define centupdate_ext txos
-
 %global distro_build 80.1.1
 
 # Sign the x86_64 kernel for secure boot authentication
@@ -35,27 +32,35 @@ Summary: The Linux kernel
 
 # define buildid .local
 
-%if 1
+# This file is auto-generated and contains txos package information
+Source1: txos.inc
 
-%define __txos_base       %{?txos_base}%{!?txos_base:5.4.29}
-%define __txos_patchlevel %{?txos_patchlevel}%{!?txos_patchlevel:1}
-%define __txos_release    %{?txos_release}%{!?txos_release:txos20.04}
+%include %{SOURCE1}
 
-%define rpmversion %{__txos_base}
-%define pkgrelease %{__txos_patchlevel}.%{__txos_release}
+%if 0%{?txos_base:1}
+
+%define rpmversion %{txos_base}
+%define pkgrelease %{txos_patchlevel}.%{txos_release}
 %define dist .el8
 
+%define specrelease %{pkgrelease}%{?dist}
+
 %else
-%define rpmversion 4.18.0
-%define pkgrelease 80.11.2.el8_0
+
+echo "No TXOS package information found"
+exit 1
+
 %endif
 
-# allow pkg_release to have configurable %%{?dist} tag
 %if 0
-%define specrelease %%SPECRELEASE%%
-%define pkg_release %{centupdate}%{?buildid}
+
+%define rpmversion 4.18.0
+%define pkgrelease 80.11.2.el8_0
+
+# allow pkg_release to have configurable %%{?dist} tag
+%define specrelease 80.11.2%{?dist}
+
 %endif
-%define specrelease %{pkgrelease}%{?dist}
 
 %define pkg_release %{specrelease}%{?buildid}
 
