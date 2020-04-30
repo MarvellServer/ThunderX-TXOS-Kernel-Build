@@ -75,10 +75,14 @@ fi
 if [ ! -e SOURCES/linux-$kversion.tar.xz ]; then
 (
     topdir=$(pwd)
-    cd SOURCES
-    git clone --reference-if-able ${txosgit:-$(cd $topdir/../ThunderX-TXOS; pwd)} \
-	https://github.com/MarvellServer/ThunderX-TXOS.git -n linux-$kversion
-    cd  linux-$kversion
+    mkdir -p SOURCES/linux-$kversion
+    cd SOURCES/linux-$kversion
+    if [ -d .git ]; then
+	git fetch origin
+    else
+	git clone --reference-if-able ${txosgit:-$(cd $topdir/../ThunderX-TXOS; pwd)} \
+	    https://github.com/MarvellServer/ThunderX-TXOS.git -n .
+    fi
     git checkout ${cid:-origin/next}
     git config tar.tar.xz.command "xz -c"
     git archive HEAD --prefix=linux-$kversion/ \
