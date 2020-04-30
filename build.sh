@@ -5,13 +5,10 @@ set -e
 
 set -xv
 
-kversion=txos-5.4.29
-
 spec_name="SPECS/kernel.spec"
 build_arch="aarch64"
 
 build_opts=(--define "%_topdir $PWD")
-build_opts+=(--define "%kern_version $kversion")
 
 ${cross_compile:""}
 
@@ -72,11 +69,11 @@ if [ x"$no_debug" == x"yes" ]; then
 fi
 
 
-if [ ! -e SOURCES/linux-$kversion.tar.xz ]; then
+if [ ! -e SOURCES/linux-txos.tar.xz ]; then
 (
     topdir=$(pwd)
-    mkdir -p SOURCES/linux-$kversion
-    cd SOURCES/linux-$kversion
+    mkdir -p SOURCES/linux-txos
+    cd SOURCES/linux-txos
     if [ -d .git ]; then
 	git fetch origin
     else
@@ -85,29 +82,29 @@ if [ ! -e SOURCES/linux-$kversion.tar.xz ]; then
     fi
     git checkout ${cid:-origin/next}
     git config tar.tar.xz.command "xz -c"
-    git archive HEAD --prefix=linux-$kversion/ \
-	-o $topdir/SOURCES/linux-$kversion.tar.xz
+    git archive HEAD --prefix=linux-txos/ \
+	-o $topdir/SOURCES/linux-txos.tar.xz
 )
 fi
 
-if [ -d SOURCES/linux-$kversion ]; then
-    txos_cid=$(xzcat SOURCES/linux-txos-5.4.29.tar.xz | git get-tar-commit-id)
+if [ -d SOURCES/linux-txos ]; then
+    txos_cid=$(xzcat SOURCES/linux-txos.tar.xz | git get-tar-commit-id)
     [ -n "$txos_cid" ]
 
     txos=$(
-	cd SOURCES/linux-$kversion
+	cd SOURCES/linux-txos
 	git describe --match txos-2\*.\* --abbrev=0 --always $txos_cid
     )
     txosfull=$(
-	cd SOURCES/linux-$kversion
+	cd SOURCES/linux-txos
 	git describe --match txos-2\*.\* --abbrev=12 --always $txos_cid
     )
     pkg=$(
-	cd SOURCES/linux-$kversion
+	cd SOURCES/linux-txos
 	git describe --match txos-\*-\* --abbrev=0 --always $txos_cid
     )
     pkgfull=$(
-	cd SOURCES/linux-$kversion
+	cd SOURCES/linux-txos
 	git describe --match txos-\*-\* --abbrev=12 --always $txos_cid
     )
 

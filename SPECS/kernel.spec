@@ -35,7 +35,7 @@ Summary: The Linux kernel
 
 # define buildid .local
 
-%if 0%{?kern_version:1}
+%if 1
 
 %define __txos_base       %{?txos_base}%{!?txos_base:5.4.29}
 %define __txos_patchlevel %{?txos_patchlevel}%{!?txos_patchlevel:1}
@@ -372,7 +372,7 @@ BuildRequires: xmlto
 BuildRequires: asciidoc
 %endif
 
-Source0: linux-%{kern_version}.tar.xz
+Source0: linux-txos.tar.xz
 
 Source11: x509.genkey
 %if %{?released_kernel}
@@ -879,8 +879,8 @@ ApplyOptionalPatch()
 
 %setup -q -n kernel-%{rpmversion}-%{pkgrelease} -c
 
-cp -v %{SOURCE9000} linux-%{kern_version}/certs/rhel.pem
-mv linux-%{kern_version} linux-%{KVERREL}
+cp -v %{SOURCE9000} linux-txos/certs/rhel.pem
+mv linux-txos linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 
