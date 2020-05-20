@@ -64,8 +64,8 @@ if [ x"$no_debug" == x"yes" ]; then
     build_opts+=(--without=debug --without=debuginfo)
 fi
 
-if ( [ -e SOURCES/linux-txos.tar.xz ] && [ -n "$do_release" ] ) \
-    || [ -n "${cid:-}" ] ; then
+if ([ -e SOURCES/linux-txos.tar.xz ] \
+    && ([ -n "$do_release" ] || [ -n "${cid:-}" ])); then
     rm SOURCES/linux-txos.tar.xz
 fi
 
