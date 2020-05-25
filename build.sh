@@ -106,11 +106,11 @@ elif [ -n "$txos_cid:-" ];then
     )
     pkg=$(
 	cd SOURCES/linux-txos
-	git describe --tags --match txos-\*-\* --abbrev=0 --always $txos_cid
+	git describe --match txos-\*-\* --abbrev=0 --always $txos_cid
     )
     pkgfull=$(
 	cd SOURCES/linux-txos
-	git describe --tags --match txos-\*-\* --abbrev=12 --always $txos_cid
+	git describe --match txos-\*-\* --abbrev=12 --always $txos_cid
     )
 
     base=${pkg%-*}
