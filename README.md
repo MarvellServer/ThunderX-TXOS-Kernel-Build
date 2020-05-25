@@ -15,10 +15,26 @@ To regenerate the the kernel source, remove the .tar.xz source file.
 
 To build a release use:
 
- $ do_release=txos20.04 ./build.sh
+ $ do_release=txos20.05 ./build.sh
+
+The release string should have the following format:
+
+ txos2\\d.\\d\\d
+
+Note that there are no dashes allowed. If there are changes on top of
+the latest release, the $do_release string should contain the next
+TXOS version to be released, e.g. use txos20.05 for a package update
+if txos20.04 is the latest release.
 
 Building a release requires the 'next' branch of ThunderX-TXOS repo to
-be tagged in the following format: txos2\\d.\\d\\d.
+be tagged. There must exist an annotated tag of the kernel version in
+the format:
+
+ txos-<base>-<patchlevel>
+
+Use something like the following to create one, e.g.:
+
+ $ git tag -a txos-5.4.42-3 -m 'TXOS 5.4.42-3' origin/next
 
 Other environment variables:
 

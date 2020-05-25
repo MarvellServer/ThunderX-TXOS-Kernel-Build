@@ -130,7 +130,16 @@ elif [ -n "$txos_cid:-" ];then
     if [ "$pkg" = "$pkgfull" ]; then
 	: # nop
     elif [ -n "$do_release" ]; then
-	echo 'A release requires a kernel version tag in the format: txos-<base>-<patchlevel>'
+	cat<<EOF
+There is no annotated kernel version tag in the format:
+
+ txos-<base>-<patchlevel>
+
+Use something like the following to create one:
+
+ $ git tag -a txos-5.4.42-3 -m 'TXOS 5.4.42-3' txos/next
+
+EOF
 	exit 1
     else
 	buildid=".g${pkgfull##*-g}"
